@@ -32,14 +32,12 @@ export default function Login() {
     const res = await signIn('credentials', {
       email: data.email,
       password: data.password,
-      redirect: false,
+     callbackUrl: '/',
     });
 
     if (res?.error) {
       setServerError(res.error);
-    } else {
-      router.replace('/dashboard/notes');
-    }
+    } 
     setIsSubmitting(false);
   };
 
