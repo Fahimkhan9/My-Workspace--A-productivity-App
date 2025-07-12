@@ -27,4 +27,4 @@ A modern React/Next.js app to manage notes and tasks with markdown support and A
 - Google Gemini API via @google/genai
 
 ---
-i
+
