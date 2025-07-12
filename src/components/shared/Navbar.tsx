@@ -11,7 +11,7 @@ export default function Navbar() {
  
       <div className="flex-1">
         <Link href="/" className="btn btn-ghost text-xl">
-          NoteApp
+          My Workspace
         </Link>
       </div>
 
