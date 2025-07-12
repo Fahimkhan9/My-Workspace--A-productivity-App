@@ -15,7 +15,7 @@ export default function CTASection() {
           Organize your thoughts, manage your tasks, and let AI help you summarize it all — all in one app.
         </p>
         <a
-          href="/dashboard"
+          href="/dashboard/notes"
           className="btn btn-secondary btn-wide text-base flex items-center justify-center gap-2 mx-auto"
         >
           Get Started
