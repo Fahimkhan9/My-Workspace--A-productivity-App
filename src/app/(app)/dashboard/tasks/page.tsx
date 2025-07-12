@@ -9,7 +9,7 @@ export default function TasksPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState('');
   const [taskToEdit, setTaskToEdit] = useState<{ _id?: string; title: string; done?: boolean }>({ title: '', done: false });
-
+const [deletingTasks, setDeletingTasks] = useState<string[]>([]);
   useEffect(() => {
     axios.get('/tasks').then(res => setTasks(res.data));
   }, []);
@@ -56,7 +56,18 @@ export default function TasksPage() {
       toast.error('Failed to update task');
     }
   };
-
+const deleteTask = async (id: string) => {
+  try {
+    setDeletingTasks(prev => [...prev, id]);
+    await axios.delete(`/tasks/${id}`);
+    setTasks(prev => prev.filter(t => t._id !== id));
+    toast.success('Task deleted');
+  } catch {
+    toast.error('Delete failed');
+  } finally {
+    setDeletingTasks(prev => prev.filter(taskId => taskId !== id));
+  }
+};
   return (
     <div>
       <div className="flex justify-end mb-4">
@@ -67,29 +78,40 @@ export default function TasksPage() {
 
       <ul className="space-y-3">
         {tasks.map(task => (
-          <li
-            key={task._id}
-            className="flex items-center justify-between bg-base-200 p-4 rounded shadow"
-          >
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-success"
-                checked={task.done}
-                onChange={() => toggleDone(task._id, task.done)}
-              />
-              <span className={task.done ? 'line-through text-gray-400' : ''}>
-                {task.title}
-              </span>
-            </div>
-            <button className="btn btn-sm btn-outline" onClick={() => openModal(task)}>
-              Edit
-            </button>
-          </li>
+         <li
+  key={task._id}
+  className="flex items-center justify-between bg-base-200 p-4 rounded shadow"
+>
+ 
+  <div className="flex items-center gap-3">
+    <input
+      type="checkbox"
+      className="checkbox checkbox-success"
+      checked={task.done}
+      onChange={() => toggleDone(task._id, task.done)}
+    />
+    <span className={task.done ? 'line-through text-gray-400' : ''}>
+      {task.title}
+    </span>
+  </div>
+
+  <div className="flex gap-2">
+    <button className="btn btn-sm btn-outline" onClick={() => openModal(task)}>
+      Edit
+    </button>
+    <button
+      className="btn btn-sm btn-error"
+      onClick={() => deleteTask(task._id)}
+      disabled={deletingTasks.includes(task._id)}
+    >
+      {deletingTasks.includes(task._id) ? 'Deleting...' : 'Delete'}
+    </button>
+  </div>
+</li>
         ))}
       </ul>
 
-      {/* Modal */}
+   
       {isModalOpen && (
         <dialog className="modal modal-open">
           <div className="modal-box space-y-4">
