@@ -15,18 +15,19 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   await connectDB();
 
   const session = await getServerSession({ req, ...authOptions });
-  if (!session?.user?.email)
+  if (!session?.user?.id)
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { title, content } = await req.json();
 
   const note = await Note.findOneAndUpdate(
-    { _id: params.id, userEmail: session.user.email },
+    { _id: params.id, userId: session.user.id },
     { title, content },
     { new: true }
   );
 
-  if (!note) return NextResponse.json({ error: 'Note not found' }, { status: 404 });
+  if (!note)
+    return NextResponse.json({ error: 'Note not found or unauthorized' }, { status: 404 });
 
   return NextResponse.json(note);
 }
@@ -35,12 +36,16 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   await connectDB();
 
   const session = await getServerSession({ req, ...authOptions });
-  if (!session?.user?.email)
+  if (!session?.user?.id)
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const deleted = await Note.findOneAndDelete({ _id: params.id, userEmail: session.user.email });
+  const deleted = await Note.findOneAndDelete({
+    _id: params.id,
+    userId: session.user.id,
+  });
 
-  if (!deleted) return NextResponse.json({ error: 'Note not found' }, { status: 404 });
+  if (!deleted)
+    return NextResponse.json({ error: 'Note not found or unauthorized' }, { status: 404 });
 
   return NextResponse.json({ message: 'Note deleted' });
 }

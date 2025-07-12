@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import axios from '@/utils/axios';
 
 type RegisterForm = {
@@ -16,6 +17,7 @@ export default function Register() {
   const router = useRouter();
   const { data: session } = useSession();
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -28,11 +30,14 @@ export default function Register() {
   }, [session, router]);
 
   const onSubmit = async (data: RegisterForm) => {
+    setIsSubmitting(true);
     try {
       await axios.post('/auth/register', data);
       router.push('/login');
     } catch (err: any) {
       setServerError(err.response?.data?.error || 'Registration failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -67,8 +72,21 @@ export default function Register() {
 
           {serverError && <p className="text-red-600">{serverError}</p>}
 
-          <button type="submit" className="btn btn-primary w-full">Create Account</button>
+          <button
+            type="submit"
+            className="btn btn-primary w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Registering...' : 'Create Account'}
+          </button>
         </form>
+
+        <p className="text-sm text-center mt-4">
+          Already have an account?{' '}
+          <Link href="/login" className="text-primary hover:underline">
+            Login here
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 type LoginForm = {
   email: string;
@@ -14,6 +15,7 @@ export default function Login() {
   const router = useRouter();
   const { data: session } = useSession();
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -26,6 +28,7 @@ export default function Login() {
   }, [session, router]);
 
   const onSubmit = async (data: LoginForm) => {
+    setIsSubmitting(true);
     const res = await signIn('credentials', {
       email: data.email,
       password: data.password,
@@ -37,6 +40,7 @@ export default function Login() {
     } else {
       router.push('/dashboard/notes');
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -62,8 +66,21 @@ export default function Login() {
 
           {serverError && <p className="text-red-600">{serverError}</p>}
 
-          <button type="submit" className="btn btn-primary w-full">Login</button>
+          <button
+            type="submit"
+            className="btn btn-primary w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Logging in...' : 'Login'}
+          </button>
         </form>
+
+        <p className="text-sm text-center mt-4">
+          Don't have an account?{' '}
+          <Link href="/register" className="text-primary hover:underline">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );

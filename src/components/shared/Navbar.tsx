@@ -8,14 +8,14 @@ export default function Navbar() {
 
   return (
     <div className="navbar bg-base-100 shadow">
-      {/* Left: Logo */}
+ 
       <div className="flex-1">
         <Link href="/" className="btn btn-ghost text-xl">
-          🚀 NoteApp
+          NoteApp
         </Link>
       </div>
 
-      {/* Right: Desktop menu */}
+      
       <div className="hidden md:flex gap-2">
         <Link href="/dashboard/notes" className="btn btn-ghost btn-sm">
           Dashboard
@@ -35,7 +35,6 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Right: Mobile dropdown menu */}
       <div className="dropdown dropdown-end md:hidden">
         <label tabIndex={0} className="btn btn-ghost btn-circle">
           <svg

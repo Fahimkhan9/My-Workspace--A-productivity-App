@@ -10,11 +10,11 @@ export async function GET(req: NextRequest) {
 
   const session = await getServerSession({ req, ...authOptions });
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const notes = await Note.find({ userEmail: session.user.email }).sort({ createdAt: -1 });
+  const notes = await Note.find({ userId: session.user.id }).sort({ createdAt: -1 });
 
   return NextResponse.json(notes);
 }
@@ -24,14 +24,14 @@ export async function POST(req: NextRequest) {
 
   const session = await getServerSession({ req, ...authOptions });
 
-  if (!session?.user?.email) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { title, content } = await req.json();
 
   const note = await Note.create({
-    userEmail: session.user.email,
+    userId: session.user.id,
     title,
     content,
   });
