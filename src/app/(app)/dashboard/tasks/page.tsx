@@ -7,11 +7,14 @@ import toast from 'react-hot-toast';
 export default function TasksPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [taskTitle, setTaskTitle] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [taskToEdit, setTaskToEdit] = useState<{ _id?: string; title: string; done?: boolean }>({ title: '', done: false });
 const [deletingTasks, setDeletingTasks] = useState<string[]>([]);
-  useEffect(() => {
-    axios.get('/tasks').then(res => setTasks(res.data));
+    useEffect(() => {
+    axios.get('/tasks')
+      .then(res => setTasks(res.data))
+      .catch(() => toast.error('Failed to load tasks'))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const openModal = (task?: any) => {
@@ -75,8 +78,13 @@ const deleteTask = async (id: string) => {
           Add Task
         </button>
       </div>
-
-      <ul className="space-y-3">
+{isLoading ? (
+        <div className="flex justify-center mt-10">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      ) : (
+         <ul className="space-y-3">
+           {tasks.length === 0 && <p>No Tasks created yet.</p>}
         {tasks.map(task => (
          <li
   key={task._id}
@@ -110,6 +118,8 @@ const deleteTask = async (id: string) => {
 </li>
         ))}
       </ul>
+      )}
+     
 
    
       {isModalOpen && (

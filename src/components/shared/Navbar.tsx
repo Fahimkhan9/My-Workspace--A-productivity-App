@@ -27,7 +27,7 @@ export default function Navbar() {
           </Link>
         ) : (
           <>
-            <div className="flex items-center text-sm">{user.name || user.email}</div>
+            <div className="flex items-center text-sm">Welcome,{user.name || user.email}</div>
             <button onClick={logout} className="btn btn-error btn-sm">
               Logout
             </button>

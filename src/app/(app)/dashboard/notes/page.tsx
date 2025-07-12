@@ -10,13 +10,15 @@ export default function NotesPage() {
   const [form, setForm] = useState({ title: '', content: '', _id: '' });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletingNotes, setDeletingNotes] = useState<string[]>([]);
-
- 
+  const [isLoading, setIsLoading] = useState(true)
   const [loadingSummaries, setLoadingSummaries] = useState<Record<string, boolean>>({});
   const [aiSummaries, setAiSummaries] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    axios.get('/notes').then(res => setNotes(res.data));
+    axios.get('/notes')
+      .then(res => setNotes(res.data))
+      .catch(() => toast.error('Failed to load notes'))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const openModal = (note = { title: '', content: '', _id: '' }) => {
@@ -79,8 +81,12 @@ export default function NotesPage() {
           Add Note
         </button>
       </div>
-
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+  {isLoading ? (
+        <div className="flex justify-center mt-10">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
         {notes.length === 0 && <p>No notes created yet.</p>}
         {notes.map(note => (
           <div key={note._id} className="card bg-base-200 p-4 shadow flex flex-col">
@@ -119,6 +125,8 @@ export default function NotesPage() {
           </div>
         ))}
       </div>
+      )}
+      
 
       {isModalOpen && (
         <dialog className="modal modal-open">
