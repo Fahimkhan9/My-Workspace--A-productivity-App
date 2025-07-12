@@ -38,7 +38,7 @@ export default function Login() {
     if (res?.error) {
       setServerError(res.error);
     } else {
-      router.push('/dashboard/notes');
+      router.replace('/dashboard/notes');
     }
     setIsSubmitting(false);
   };
